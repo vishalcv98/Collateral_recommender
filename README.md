@@ -99,9 +99,9 @@ Activate your Python virtual environment and install dependencies from requireme
 - Make sure you have Python 3.13.3 installed on your system. To create a virtual environment using venv: 
 
 
-`python3.13 -m venv venv`
+- run `python3.13 -m venv venv`
 
-- source venv/bin/activate
+- run `source venv/bin/activate`
 
 - run `pip install -r requirements.txt` in the terminal
 
