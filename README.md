@@ -86,7 +86,7 @@ Interpretability: Rounds and caps results for easier operational use.
 Fairness: Avoids penalizing new vendors with limited data by relying on segment-level risk norms.
 
 # Risk Predictor model results on test set
-Classification Report:
+
                precision    recall  f1-score   support
 
          0.0       0.87      0.81      0.84      9428
@@ -97,18 +97,6 @@ Classification Report:
 weighted avg       0.78      0.77      0.78     12822
 
 ROC AUC Score: 0.8168
-
-[ ]
-import numpy as np
-from sklearn.metrics import precision_score, recall_score, f1_score
-
-thresholds = np.arange(0.1, 1.0, 0.1)
-y_probs = xgb_model.predict_proba(X_test)[:, 1]
-
-print(f"{'Threshold':<10}{'Precision':<10}{'Recall':<10}{'F1-score':<10}")
-for thresh in thresholds:
-    y_pred_thresh = (y_probs >= thresh).astype(int)
-    precision = precision_score(y_test, y_pred_thresh)
 
 Threshold Precision Recall    F1-score  
 0.1       0.292     0.984     0.450     
