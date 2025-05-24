@@ -85,7 +85,7 @@ class RefundRiskModel:
         features = features.loc[:, ~features.columns.duplicated()]
         self.df = features
         self.feature_columns = [col for col in features.columns if col not in ['refund_flag']]
-        joblib.dump(self.feature_columns, 'feature_columns.joblib')
+        joblib.dump(self.feature_columns, 'feature_matcher\\feature_columns.joblib')
         print("Features generated")
 
     def train_model(self):
@@ -122,12 +122,15 @@ class RefundRiskModel:
 
         self.df['predicted_refund_risk'] = model.predict_proba(X.drop(columns=['COMPANY_ID']))[:, 1]
         self.model = model
-        joblib.dump(model, 'risky_vendir_classifier.joblib')
+        joblib.dump(model, 'model_file\\risky_vendir_classifier.joblib')
         print("Model trained")
 
+# Replace with path of Transaction Data
 chunks = pd.read_csv('Copy of crediarc_transactions_full.csv',
                        chunksize=500000)
 trans_df = pd.concat(chunks, ignore_index=True)
+
+# Replace with path of Accounts Data
 accounts_df = pd.read_csv('crediarc_accounts_full_nn.csv')
 print('data successfully read')
 model = RefundRiskModel(trans_df, accounts_df)

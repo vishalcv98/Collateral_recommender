@@ -1,3 +1,3 @@
 import joblib
-expected_cols = joblib.load('feature_columns.joblib')
-print(expected_cols)
+
+joblib.load('model_file\\risky_vendir_classifier.joblib')

@@ -1,14 +1,17 @@
 import pandas as pd
 import numpy as np
-from predict_risk import RefundRiskPredictor
+from scripts.predict_risk import RefundRiskPredictor
 import joblib
 
+# Replace with path of Transaction Data
 chunks = pd.read_csv('Copy of crediarc_transactions_full.csv',
                        chunksize=500000)
 trans_df = pd.concat(chunks, ignore_index=True)
+
+# Replace with path of Accounts Data
 accounts_df = pd.read_csv('crediarc_accounts_full_nn.csv')
 print('data successfully read')
-model = joblib.load("risky_vendir_classifier.joblib")
+model = joblib.load("model_file\\risky_vendir_classifier.joblib")
 predictor = RefundRiskPredictor(model)
 
 # Load your fresh transaction and account data
@@ -16,6 +19,7 @@ df = predictor.predict(trans_df, accounts_df)
 df = df.loc[:, ~df.columns.duplicated()]
 print(df.columns)
 print(df.head())
+
 
 def recommend_collateral_dynamic_weight_extended(row, 
                                                 weight_pred_min=0.3, 

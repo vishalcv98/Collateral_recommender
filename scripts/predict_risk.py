@@ -76,7 +76,7 @@ class RefundRiskPredictor:
         accounts_df[dummy_cols] = accounts_df[dummy_cols].astype(int)
         features = features.merge(accounts_df, on="COMPANY_ID", how="left")
         features = features.drop(columns=["NO_OF_EMPLOYEES",'last_txn_date','first_txn_date'], errors='ignore')
-        expected_cols = joblib.load('feature_columns.joblib')
+        expected_cols = joblib.load('feature_matcher\\feature_columns.joblib')
         for col in expected_cols:
             if col not in features.columns:
                 features[col] = 0
