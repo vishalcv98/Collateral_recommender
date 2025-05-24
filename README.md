@@ -1,0 +1,101 @@
+Methodology
+Overview
+This project aims to determine an appropriate collateral percentage for vendors based on their predicted refund risk and historical refund behavior. The system blends model-driven risk estimation with historical heuristics, adjusting the weight of each source dynamically based on prediction confidence.
+
+Input Features
+The dataset consists of over 70 features per vendor, including:
+
+Transaction aggregates: total payments, number of transactions, refund counts, average/max payment, etc.
+
+Temporal features: days since last transaction, active days, recent transaction/refund patterns.
+
+Business metadata: one-hot encoded COMPANY_TYPE and MEMBER_SEGMENT_ATV attributes.
+
+Model output: predicted_refund_risk, a probability score from a trained classifier.
+
+Collateral Recommendation Strategy
+The function recommend_collateral_dynamic_weight_extended() estimates the recommended collateral percentage for each vendor. This is calculated as a weighted blend of:
+
+Model-predicted refund risk (confidence-based)
+
+Historical refund rate (segment or global average fallback)
+
+Here’s a breakdown of how it works:
+
+Step-by-Step Breakdown
+1. Handle Low Transaction Volume
+If the vendor has fewer than 5 transactions, their personal refund_rate is likely unreliable. In such cases:
+
+Attempt to use segment-level refund rates:
+
+First by matching the COMPANY_TYPE_* column where value is 1.
+
+If not found, try matching the MEMBER_SEGMENT_ATV_* column.
+
+If both fail, fall back to the global average refund rate from all vendors.
+
+This ensures that vendors with minimal transaction history still receive a reasonable estimate grounded in peer behavior.
+
+2. Confidence-Based Blending
+Once we have:
+
+pred_prob: model’s predicted refund probability for the vendor
+
+hist_rate: historical refund rate (actual or fallback)
+
+We use dynamic blending to compute an overall estimated risk:
+
+python
+Copy
+Edit
+scale = (pred_prob - min_prob_threshold) / (1 - min_prob_threshold)
+weight_pred = weight_pred_min + scale * (weight_pred_max - weight_pred_min)
+weight_hist = 1 - weight_pred
+weight_pred_min and weight_pred_max define the minimum and maximum trust in the model's output.
+
+min_prob_threshold defines the confidence floor. Predictions below this threshold are treated as noise.
+
+Key Insight:
+
+If pred_prob is close to the threshold → rely more on hist_rate.
+
+If pred_prob is much higher than the threshold → rely more on pred_prob.
+
+This leads to the final blended risk:
+
+python
+Copy
+Edit
+est_risk = weight_pred * pred_prob + weight_hist * hist_rate
+3. Clip and Round Collateral
+To make the recommendation business-friendly:
+
+We clip the est_risk to stay between 5% and 50%:
+
+python
+Copy
+Edit
+collateral_pct = np.clip(est_risk, 0.05, 0.50)
+Then, we round it to the nearest 5% increment for ease of interpretation:
+
+python
+Copy
+Edit
+collateral_pct_rounded = round(collateral_pct / 0.05) * 0.05
+This becomes the final recommended collateral percentage for the vendor.
+
+Final Application
+The function is vectorized over the DataFrame:
+
+python
+Copy
+Edit
+df["recommended_collateral_pct"] = df.apply(recommend_collateral_dynamic_weight_extended, axis=1)
+💡 Why This Approach?
+Robustness: Falls back to reliable averages for vendors with sparse data.
+
+Adaptability: Gives higher weight to predictions when model confidence is high.
+
+Interpretability: Rounds and caps results for easier operational use.
+
+Fairness: Avoids penalizing new vendors with limited data by relying on segment-level risk norms.
