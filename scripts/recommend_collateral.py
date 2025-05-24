@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from predict_risk import RefundRiskPredictor
 import joblib
+import os
 
 # Replace with path of Transaction Data
 chunks = pd.read_csv('Copy of crediarc_transactions_full.csv',
@@ -63,4 +64,7 @@ def recommend_collateral_dynamic_weight_extended(row,
     return collateral_pct_rounded
 print(df.columns)
 df["recommended_collateral_pct"] = df.apply(recommend_collateral_dynamic_weight_extended, axis=1)
-df.to_csv("results\\risk_probability_and_recommended_collateral_perc.csv")
+os.makedirs("results", exist_ok=True)
+
+# Save the DataFrame to CSV
+df.to_csv("results\\risk_probability_and_recommended_collateral_perc.csv", index=False)
