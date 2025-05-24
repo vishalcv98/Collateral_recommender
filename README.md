@@ -84,3 +84,48 @@ Adaptability: Gives higher weight to predictions when model confidence is high.
 Interpretability: Rounds and caps results for easier operational use.
 
 Fairness: Avoids penalizing new vendors with limited data by relying on segment-level risk norms.
+
+# How to Run the Code
+## Prerequisites
+Python 3.8+
+
+Required libraries: pandas, numpy, scikit-learn, etc.
+
+Activate your Python virtual environment and install dependencies from requirements.txt if available.
+
+# Execution Steps
+- `git clone https://github.com/vishalcv98/Collateral_recommender.git`
+- `cd Collateral_recommender`
+- Make sure you have Python 3.13.3 installed on your system. To create a virtual environment using venv: 
+
+
+`python3.13 -m venv venv`
+
+- source venv/bin/activate
+
+- run `pip install -r requirements.txt` in the terminal
+
+- Update file paths
+
+Open the following two files:
+
+scripts/training.py
+
+scripts/recommend_collateral.py
+
+➤ Locate the section with comments indicating where to provide paths for the input transactions and accounts data files, and update accordingly.
+
+Run Training Script (only once unless retraining)
+
+This will generate the model for refund risk prediction.
+
+python scripts/training.py
+Run Recommendation Script
+
+This applies the trained model and generates collateral recommendations.
+
+python scripts/recommend_collateral.py
+
+- Check Output
+
+Results will be stored in the results/ folder as a .csv file with recommended collateral percentages.
