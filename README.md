@@ -93,8 +93,6 @@ Fairness: Avoids penalizing new vendors with limited data by relying on segment-
          1.0       0.56      0.65      0.60      3394
 
     accuracy                           0.77     12822
-   macro avg       0.71      0.73      0.72     12822
-weighted avg       0.78      0.77      0.78     12822
 
 ROC AUC Score: 0.8168
 
