@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scripts.predict_risk import RefundRiskPredictor
+from predict_risk import RefundRiskPredictor
 import joblib
 
 # Replace with path of Transaction Data
@@ -63,4 +63,4 @@ def recommend_collateral_dynamic_weight_extended(row,
     return collateral_pct_rounded
 print(df.columns)
 df["recommended_collateral_pct"] = df.apply(recommend_collateral_dynamic_weight_extended, axis=1)
-print(df.head())
+df.to_csv("results\\risk_probability_and_recommended_collateral_perc.csv")
