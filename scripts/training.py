@@ -67,6 +67,51 @@ class RefundRiskModel:
         features = features.merge(txn_counts, on='COMPANY_ID', how='left')
         features = features.merge(recent_features, on='COMPANY_ID', how='left')
 
+        cutoff_7d = self.past_txns['TRANSACTION_ON'].max() - pd.Timedelta(days=30)
+        recent_7d = self.past_txns[self.past_txns['TRANSACTION_ON'] >= cutoff_7d]
+
+        last_7_days_features = recent_7d.groupby('COMPANY_ID').agg(
+            last_7_days_txn_count=('PAYMENT_AMOUNT', 'count'),
+            last_7_days_total_paid=('PAYMENT_AMOUNT', 'sum'),
+            last_7_days_total_refunds=('AMOUNT_REFUNDED', 'sum'),
+            last_7_days_total_disputes=('IS_DISPUTE', 'sum')
+        ).reset_index()
+
+        cutoff_30d = self.past_txns['TRANSACTION_ON'].max() - pd.Timedelta(days=30)
+        recent_30d = self.past_txns[self.past_txns['TRANSACTION_ON'] >= cutoff_30d]
+
+        last_30_days_features = recent_30d.groupby('COMPANY_ID').agg(
+            last_30_days_txn_count=('PAYMENT_AMOUNT', 'count'),
+            last_30_days_total_paid=('PAYMENT_AMOUNT', 'sum'),
+            last_30_days_total_refunds=('AMOUNT_REFUNDED', 'sum'),
+            last_30_days_total_disputes=('IS_DISPUTE', 'sum')
+        ).reset_index()
+
+        cutoff_90d = self.past_txns['TRANSACTION_ON'].max() - pd.Timedelta(days=90)
+        recent_90d = self.past_txns[self.past_txns['TRANSACTION_ON'] >= cutoff_90d]
+
+        last_90_days_features = recent_90d.groupby('COMPANY_ID').agg(
+            last_90_days_txn_count=('PAYMENT_AMOUNT', 'count'),
+            last_90_days_total_paid=('PAYMENT_AMOUNT', 'sum'),
+            last_90_days_total_refunds=('AMOUNT_REFUNDED', 'sum'),
+            last_90_days_total_disputes=('IS_DISPUTE', 'sum')
+        ).reset_index()
+
+        cutoff_120d = self.past_txns['TRANSACTION_ON'].max() - pd.Timedelta(days=120)
+        recent_120d = self.past_txns[self.past_txns['TRANSACTION_ON'] >= cutoff_120d]
+
+        last_120_days_features = recent_120d.groupby('COMPANY_ID').agg(
+            last_120_days_txn_count=('PAYMENT_AMOUNT', 'count'),
+            last_120_days_total_paid=('PAYMENT_AMOUNT', 'sum'),
+            last_120_days_total_refunds=('AMOUNT_REFUNDED', 'sum'),
+            last_120_days_total_disputes=('IS_DISPUTE', 'sum')
+        ).reset_index()
+
+        features = features.merge(last_30_days_features,on='COMPANY_ID',how='left')
+        features = features.merge(last_90_days_features,on='COMPANY_ID',how='left')
+        features = features.merge(last_120_days_features,on='COMPANY_ID',how='left')
+        features = features.merge(last_7_days_features,on='COMPANY_ID',how='left')
+
         vendor_info = self.accounts_df[[
             "COMPANY_ID", "COMPANY_TYPE", "MEMBER_SEGMENT_ATV", "MONTHS_AGE",
             "NO_OF_EMPLOYEES", "GPV_2YEARS", "PROJECTS_2YEARS", "PAYMENTS_NOT_MANUAL"
